@@ -12,7 +12,7 @@ class Executor:
 
     def run_step(self, state):
         decision = self.decision_engine.decide(self.policy, state)
-        next_state, reward, done, info = self.environment.step(
+        next_state, reward, done, _ = self.environment.step(
             decision["action"]
         )
 

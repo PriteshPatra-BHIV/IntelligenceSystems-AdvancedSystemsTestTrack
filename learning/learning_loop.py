@@ -26,16 +26,17 @@ class LearningLoop:
         self.learner = learner
         self.exploration = exploration_strategy
         self.replay_logger = replay_logger
+        
+        # Create episode runner once for efficiency
+        self.episode_runner = EpisodeRunner(
+            environment=self.environment,
+            policy=self.policy,
+            exploration_strategy=self.exploration
+        )
 
     def train(self, episodes: int, max_steps_per_episode: int) -> None:
         for episode_id in range(episodes):
-            runner = EpisodeRunner(
-                environment=self.environment,
-                policy=self.policy,
-                exploration_strategy=self.exploration
-            )
-
-            episode_result = runner.run_episode(max_steps_per_episode)
+            episode_result = self.episode_runner.run_episode(max_steps_per_episode)
 
             # Deterministic policy update
             self.learner.update_policy(

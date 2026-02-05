@@ -5,14 +5,16 @@ Produces a human-readable explanation
 for why a particular action was selected.
 """
 
+from typing import Dict, Any
+
 class Explainer:
     def explain_decision(
         self,
-        state,
-        action,
+        state: Dict[str, Any],
+        action: str,
         confidence: float,
-        uncertainty_snapshot: dict
-    ) -> dict:
+        uncertainty_snapshot: Dict[str, Any]
+    ) -> Dict[str, Any]:
 
         return {
             "state": state,

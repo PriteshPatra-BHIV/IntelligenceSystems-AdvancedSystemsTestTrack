@@ -3,6 +3,10 @@ from learning.learning_loop import LearningLoop
 from learning.learner import Learner
 from learning.exploration import ExplorationStrategy
 from utils.logger import DeterministicLogger
+from collections import namedtuple
+
+# Environment step result for better type safety
+StepResult = namedtuple('StepResult', ['next_state', 'reward', 'done', 'info'])
 
 # -------------------------------
 # Minimal deterministic environment
@@ -10,9 +14,11 @@ from utils.logger import DeterministicLogger
 class SimpleEnv:
     def __init__(self):
         self.step_count = 0
+        self.total_reward = 0.0
 
     def reset(self):
         self.step_count = 0
+        self.total_reward = 0.0
         return {
             "current_step": 0,
             "observed_signal": 1.0,
@@ -23,23 +29,24 @@ class SimpleEnv:
     def step(self, action):
         self.step_count += 1
         reward = 1.0 if action == "WAIT" else 0.0
+        self.total_reward += reward  # Properly accumulate rewards
         done = self.step_count >= 3
 
         next_state = {
             "current_step": self.step_count,
             "observed_signal": 1.0,
             "previous_action": action,
-            "accumulated_reward": reward
+            "accumulated_reward": self.total_reward  # Use accumulated total
         }
 
-        return next_state, reward, done, {}
+        return StepResult(next_state, reward, done, {})
 
 # -------------------------------
 # Minimal deterministic policy
 # -------------------------------
 class SimplePolicy:
     def __init__(self):
-        self.memory = {}
+        pass  # Remove unused memory attribute
 
     def select_action(self, state):
         return "WAIT"
@@ -48,7 +55,7 @@ class SimplePolicy:
         pass
 
     def snapshot(self):
-        return dict(self.memory)
+        return {}  # Return empty dict directly
 
     def get_confidence(self, state):
         return 0.5

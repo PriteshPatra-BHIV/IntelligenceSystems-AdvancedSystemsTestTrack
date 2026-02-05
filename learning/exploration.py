@@ -15,6 +15,9 @@ class ExplorationStrategy:
         """
         Decide whether to explore or exploit.
         """
+        # Register state visit before checking count
+        self.register_state(state)
+        
         key = self._state_key(state)
         visits = self.state_visit_counter.get(key, 0)
 
@@ -31,7 +34,9 @@ class ExplorationStrategy:
 
     def register_state(self, state):
         key = self._state_key(state)
-        self.state_visit_counter[key] = self.state_visit_counter.get(key, 0) + 1
+        if key not in self.state_visit_counter:
+            self.state_visit_counter[key] = 0
+        self.state_visit_counter[key] += 1
 
     def _state_key(self, state):
         return str(state)
